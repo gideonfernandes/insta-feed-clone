@@ -8,10 +8,11 @@ import {
   Header,
   Avatar,
   Name,
-  PostImage,
   Description,
   Loading,
 } from './styles';
+
+import LazyImage from '../../components/LazyImage';
 
 const Feed = () => {
   const [feed, setFeed] = useState([]);
@@ -67,7 +68,11 @@ const Feed = () => {
               <Name>{item.author.name}</Name>
             </Header>
 
-            <PostImage aspectRatio={item.aspectRatio} source={{ uri: item.image }} />
+            <LazyImage
+              aspectRatio={item.aspectRatio}
+              source={{ uri: item.image }}
+              smallSource={{ uri: item.small }}
+            />
 
             <Description>
               <Name>{item.author.name}</Name> {item.description}
