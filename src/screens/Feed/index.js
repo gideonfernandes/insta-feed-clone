@@ -9,29 +9,47 @@ import {
   Avatar,
   Name,
   PostImage,
-  Description
+  Description,
+  Loading,
 } from './styles';
 
 const Feed = () => {
-  const [feed, setFeed] = useState();
+  const [feed, setFeed] = useState([]);
+  const [page, setPage] = useState(1);
+  const [totalPage, setTotalPage] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
-  async function loadPage(pageNumber = 1){
-    console.log('LoadPage');
+  async function loadPage(pageNumber = page, shouldRefresh = false){
+    if (totalPage && pageNumber > totalPage) return;
+
+    setLoading(true);
+    
+    const response = await fetch(
+      `http://localhost:3000/feed?_expand=author&_limit=5&_page=${pageNumber}`
+    );
+
+    const data = await response.json();
+    const total = response.headers.get('X-Total-Count');
+
+    setTotalPage(Math.ceil(total / 5));
+    setFeed(shouldRefresh ? data : [...feed, ...data]);
+    setPage(pageNumber + 1);
+
+    setLoading(false);
   };
 
   useEffect(() => {
-    async function loadFeed() {
-      const response = await fetch(
-        'http://localhost:3000/feed?_expand=author&_limit=5&_page=1'
-      );
-
-      const data = await response.json();
-
-      setFeed(data);
-    };
-
-    loadFeed();
+    loadPage();
   }, []);
+
+  async function refreshList() {
+    setRefreshing(true);
+
+    await loadPage(1, true);
+
+    setRefreshing(false);
+  };
 
   return (
     <Container>
@@ -40,6 +58,8 @@ const Feed = () => {
         keyExtractor={(post) => String(post.id)}
         onEndReached={() => loadPage()}
         onEndReachedThreshold={0.1}
+        onRefresh={refreshList}
+        refreshing={refreshing}
         renderItem={({ item }) => (
           <Post>
             <Header>
@@ -54,6 +74,7 @@ const Feed = () => {
             </Description>
           </Post>
         )}
+        ListFooterComponent={loading && <Loading />}
       />
     </Container>
   );
