@@ -1,24 +1,37 @@
 import React, { useState, useEffect } from 'react';
+import { Animated, View } from 'react-native';
 
-import { Container, Small, Original } from './styles';
+import { Small, Original } from './styles';
+
+const AnimatedPostImage = Animated.createAnimatedComponent(Original);
 
 const LazyImage = ({
   smallSource,
   source,
   aspectRatio,
+  shouldLoad,
 }) => {
+  const opacity = new Animated.Value(0);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    setTimeout(() => {
-      setLoaded(true);
-    }, 1000);
-  }, []);
+    if (shouldLoad) {
+      // setTimeout(() => {
+        setLoaded(true);
+      // }, 1000);
+    };
+  }, [shouldLoad]);
 
-  async function handleAnimate() {};
+  function handleAnimate() {
+    Animated.timing(opacity, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+  };
 
   return (
-    <Container>
+    <View>
       <Small
         source={smallSource}
         resizeMode="contain"
@@ -26,7 +39,8 @@ const LazyImage = ({
         blurRadius={2}
       >
         {loaded && (
-          <Original
+          <AnimatedPostImage
+            style={{ opacity }}
             source={source}
             resizeMode="contain"
             aspectRatio={aspectRatio}
@@ -34,7 +48,7 @@ const LazyImage = ({
           />
         )}
       </Small>
-    </Container>
+    </View>
   );
 };
 

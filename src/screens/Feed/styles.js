@@ -1,9 +1,5 @@
 import styled from 'styled-components/native';
 
-export const Container = styled.View`
-  flex: 1;
-`;
-
 export const Post = styled.View`
   margin-top: 10px;
 `;
