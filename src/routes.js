@@ -16,7 +16,6 @@ const Routes = () => {
         headerTitleAlign: 'center',
         headerStyle: {
           backgroundColor: '#f5f5f5',
-          height: '100%',
         }
       }}>
         <Screen name="Feed" component={Feed} />
